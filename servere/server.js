@@ -60,25 +60,15 @@ const app = express();
 
 
 const allowedOrigins = [
-    "https://skillsphere6.onrender.com/"
+    "http://localhost:5173",
+    "https://skillsphere-18vk-beta.vercel.app",
+    "https://skillsphere6.onrender.com"
 ];
 
 
 app.use(
     cors({
-        origin: function (origin, callback) {
-
-            if (!origin) {
-                return callback(null, true);
-            }
-
-            if (allowedOrigins.includes(origin)) {
-                return callback(null, true);
-            }
-
-            return callback(new Error("Not allowed by CORS"));
-        },
-        credentials: true,
+        origin: allowedOrigins,
         methods: [
             "GET",
             "POST",
@@ -87,6 +77,7 @@ app.use(
             "DELETE",
             "OPTIONS"
         ],
+        credentials: true,
         allowedHeaders: [
             "Content-Type",
             "Authorization"
@@ -95,7 +86,7 @@ app.use(
 );
 
 
-app.options("*", cors());
+app.use(express.json());
 
 
 app.use(express.json());
