@@ -20,59 +20,74 @@ const invitationRoutes = require("./routes/invitationRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
-// Socket Handler
+
 const socketHandler = require("./socket/socket");
 const { setIO } = require("./socket/socketInstance");
 
 const razorpay = require("./config/razorpay");
-
 console.log("Razorpay Connected:", !!razorpay);
 
 const walletRoutes = require("./routes/walletRoutes");
-
-
 const paymentRoutes = require("./routes/paymentRoutes");
-
 const reviewRoutes = require("./routes/reviewRoutes");
 
 const adminDashboardRoutes = require("./routes/adminDashboardRoutes");
 const adminUserRoutes = require("./routes/adminUserRoutes");
-
 const adminProjectRoutes = require("./routes/adminProjectRoutes");
 const adminPaymentRoutes = require("./routes/adminPaymentRoutes");
 const adminAuditRoutes = require("./routes/adminAuditRoutes");
-const searchRoutes=require("./routes/searchRoutes");
+const searchRoutes = require("./routes/searchRoutes");
 const availabilityRoutes = require("./routes/availabilityRoutes");
 const disputeRoutes = require("./routes/disputeRoutes");
 const projectProgressRoutes = require("./routes/projectProgressRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
-const settingsRoutes =
-require("./routes/settingsRoutes");
+const settingsRoutes = require("./routes/settingsRoutes");
 const workRoutes = require("./routes/workRoutes");
-const clientWorkspaceRoutes =
-require("./routes/clientWorkspaceRoutes");
-
-const adminWalletRoutes =
-require("./routes/adminWalletRoutes");
+const clientWorkspaceRoutes = require("./routes/clientWorkspaceRoutes");
+const adminWalletRoutes = require("./routes/adminWalletRoutes");
 
 
-
-// Connect Database
+// Database
 connectDB();
+
 
 const app = express();
 
-// Middleware
-app.use(cors({
-    origin: [
-        "http://localhost:5173",
-        "https://skillsphere-k7db-one.vercel.app"
-    ],
-    credentials: true
-}));
+
+// ===============================
+// CORS CONFIGURATION
+// ===============================
+
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://skillsphere-18vk.vercel.app"
+];
+
+
+app.use(
+    cors({
+        origin: allowedOrigins,
+        methods: [
+            "GET",
+            "POST",
+            "PUT",
+            "PATCH",
+            "DELETE",
+            "OPTIONS"
+        ],
+        credentials: true
+    })
+);
+
+
 app.use(express.json());
 
-// Routes
+
+
+// ===============================
+// API ROUTES
+// ===============================
+
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
@@ -85,71 +100,89 @@ app.use("/api/invitations", invitationRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/notifications", notificationRoutes);
-app.use("/api/payment", paymentRoutes);
-app.use("/api/reviews",reviewRoutes)
 
+app.use("/api/payment", paymentRoutes);
+app.use("/api/reviews", reviewRoutes);
 app.use("/api/wallet", walletRoutes);
+
 app.use("/api/admin/dashboard", adminDashboardRoutes);
 app.use("/api/admin", adminUserRoutes);
-
 app.use("/api/admin", adminProjectRoutes);
-
-
 app.use("/api/admin", adminPaymentRoutes);
-
 app.use("/api/admin", adminAuditRoutes);
+app.use("/api/admin", adminWalletRoutes);
 
-app.use("/api/search",searchRoutes);
-app.use("/api/availability",availabilityRoutes);
-
-
+app.use("/api/search", searchRoutes);
+app.use("/api/availability", availabilityRoutes);
 
 app.use("/api/disputes", disputeRoutes);
-app.use("/api/progress",projectProgressRoutes);
-
+app.use("/api/progress", projectProgressRoutes);
 
 app.use("/api/analytics", analyticsRoutes);
 
-
-
-app.use(
-"/api/settings",
-settingsRoutes
-);
+app.use("/api/settings", settingsRoutes);
 
 app.use("/api/work", workRoutes);
-app.use(
-    "/api/client",
-    clientWorkspaceRoutes
-    );
 
-    app.use(
-        "/api/admin",
-        adminWalletRoutes
-        );
-// Home Route
+app.use("/api/client", clientWorkspaceRoutes);
+
+
+
+// ===============================
+// TEST ROUTES
+// ===============================
+
 app.get("/", (req, res) => {
     res.send("🚀 SkillSphere Backend is Running");
 });
 
-// Create HTTP Server
+
+app.get("/api", (req, res) => {
+    res.json({
+        success: true,
+        message: "SkillSphere API Running"
+    });
+});
+
+
+
+// ===============================
+// SERVER
+// ===============================
+
 const server = http.createServer(app);
 
-// Socket.IO
+
+
+// ===============================
+// SOCKET.IO
+// ===============================
+
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST"],
-        credentials: true,
-    },
+        origin: allowedOrigins,
+        methods: [
+            "GET",
+            "POST"
+        ],
+        credentials: true
+    }
 });
+
+
 setIO(io);
-// Initialize Socket Events
+
 socketHandler(io);
 
-// Start Server
+
+
+// ===============================
+// START SERVER
+// ===============================
+
 const PORT = process.env.PORT || 5000;
 
+
 server.listen(PORT, () => {
-    console.log(`🚀 Server is running at http://localhost:${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
