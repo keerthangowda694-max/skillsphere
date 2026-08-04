@@ -58,9 +58,10 @@ const app = express();
 // CORS CONFIGURATION
 // ===============================
 
-const allowedOrigins = [
+
+ const allowedOrigins = [
     "http://localhost:5173",
-    "https://skillsphere-18vk-beta.vercel.app/"
+    "https://skillsphere-18vk-beta.vercel.app"
 ];
 
 
@@ -78,6 +79,10 @@ app.use(
         credentials: true
     })
 );
+
+
+app.options("*", cors());
+
 
 
 app.use(express.json());
