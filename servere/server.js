@@ -86,7 +86,6 @@ app.use(
 );
 
 
-app.use(express.json());
 
 
 app.use(express.json());
