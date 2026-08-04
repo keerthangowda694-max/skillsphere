@@ -62,7 +62,8 @@ const app = express();
 const allowedOrigins = [
     "http://localhost:5173",
     "https://skillsphere-18vk-beta.vercel.app",
-    "https://skillsphere6.onrender.com"
+    "https://skillsphere6.onrender.com",
+    "https://skillsphere21.onrender.com/"
 ];
 
 
